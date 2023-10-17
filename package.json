@@ -8,7 +8,9 @@
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "index": "node index.js",
-    "process-argv": "clear && node exercicios/process-argv.js"
+    "process-argv": "clear && node exercicios/process-argv.js",
+    "jogar-par-ou-impar": "node exercicios/par-ou-impar.js",
+    "jogar-pedra-papel-tesoura": "node exercicios/pedra-papel-tesoura.js"
   },
   "author": "Lincon",
   "license": "ISC"
