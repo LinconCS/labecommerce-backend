@@ -7,7 +7,12 @@ function getRndInteger(min, max) {
   const [, , jogadorEscolha] = process.argv;
   
   const opcoes = ["pedra", "papel", "tesoura"];
+  if (!opcoes.includes(jogadorEscolha)) {
+    console.log("Por favor, escolha 'pedra', 'papel' ou 'tesoura'.");
+    process.exit(1);
+  }
   const computadorEscolha = opcoes[getRndInteger(0, 2)];
+
   
   if (jogadorEscolha === computadorEscolha) {
     console.log(`Você escolheu ${jogadorEscolha} e o computador escolheu ${computadorEscolha}. Empate!`);
