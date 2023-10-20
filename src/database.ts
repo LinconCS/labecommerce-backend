@@ -74,3 +74,15 @@ export const searchProductsByName = (name: string): TypeProducts[] => {
 
   return products.filter(product => product.name.toLowerCase().includes(searchWord));
 };
+
+export const getUserById = (id: string): TypeUsers | undefined => {
+  return users.find(user => user.id === id);
+};
+
+export const getUserByEmail = (email: string): TypeUsers | undefined => {
+  return users.find(user => user.email === email);
+};
+
+export const getProductById = (id: string): TypeProducts | undefined => {
+  return products.find(product => product.id === id);
+};
