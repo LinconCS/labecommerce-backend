@@ -44,7 +44,7 @@ export const products: TypeProducts[] = [
     name: "Gabinete gamer",
     price: 400,
     description: "Gabinete Gamer Com 3 Fans Argb, Lateral de Vidro Temperado",
-    imageUrl: "https://picsum.photos/seed/Monitor/400"
+    imageUrl: "https://picsum.photos/seed/Gabinete%20gamer/400"
   }
 ];
 
