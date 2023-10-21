@@ -24,7 +24,7 @@ VALUES
 
 -- Criar uma novo usuário na tabela users
   INSERT INTO users (id, name, email, password, created_at)
-VALUES ('u004', 'labenuser', 'labenuser@email.com', 'lebenusersenha', '2023-08-30T12:00:00.000Z')
+VALUES ('u004', 'Labenuser', 'labenuser@email.com', 'labenusersenha', '2023-08-30T12:00:00.000Z')
 
 -- Deletar user pelo ID
 DELETE FROM users
@@ -53,7 +53,7 @@ VALUES
   ('prod004', 'Teclado mecânico', 150, 'Teclado Mecânico RGB', 'https://picsum.photos/seed/Teclado%20mecanico/400'),
   ('prod005', 'Headset gamer', 120, 'Headset com som surround 7.1, microfone retrátil', 'https://picsum.photos/seed/Headset%20gamer/400');
 
--- Retornar todas os produtos cadastrados na tabela products
+-- Retornar todos os produtos cadastrados na tabela products
 SELECT * FROM products;
 
 -- Retornar somente os produtos que possuem em seu nome o termo "gamer"da tabela products
@@ -75,6 +75,50 @@ SET
   description = 'Monitor gamer 4k 32 polegadas'
 WHERE id = 'prod002'; -- informar o id do produto que deseja editar
 
--- Deletar a tabela product
+-- Deletar a tabela products
 DROP TABLE products;
+
+
+
+-- Criação da tabela de purchases
+CREATE TABLE purchases (
+    id TEXT PRIMARY KEY UNIQUE NOT NULL,
+    buyer TEXT NOT NULL,
+    total_price REAL NOT NULL,
+    created_at TEXT NOT NULL,
+    FOREIGN KEY (buyer) REFERENCES users(id)
+);
+
+-- Criação de pedidos para cada pessoa
+INSERT INTO purchases (id, buyer, total_price, created_at)
+VALUES 
+  ('p001', 'u001', 900, '2023-08-30T14:00:00Z'),
+  ('p002', 'u002', 520, '2023-08-30T14:30:00Z'),
+  ('p003', 'u003', 300, '2023-08-30T15:00:00Z'),
+  ('p004', 'u004', 270, '2023-08-30T15:30:00Z');
+
+  -- Retornar todos os pedidos cadastrados na tabela purchases
+SELECT * FROM purchases;
+
+-- Edição do preço total do pedido
+UPDATE purchases
+SET total_price = 2500.00
+WHERE id = 'p001';
+
+-- Deletar a tabela purchases
+DROP TABLE purchases;
+
+SELECT 
+    purchases.id AS 'purchase_id',
+    buyer AS 'buyer_id',
+    users.name AS 'buyer_name',
+    email,
+    total_price,
+    purchases.created_at
+FROM purchases
+INNER JOIN users
+ON purchases.buyer = users.id;
+
+
+
 
