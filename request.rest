@@ -1,3 +1,73 @@
-
 GET http://localhost:3003/ping
 ### 
+
+GET http://localhost:3003/users
+###
+
+GET http://localhost:3003/products
+###
+
+GET http://localhost:3003/products?name=Gamer
+###
+
+POST http://localhost:3003/users
+Content-Type: application/json
+
+{
+  "id": "u005",
+  "name": "Userlabenu",
+  "email": "userlabenu@email.com",
+  "password": "userlabenu#"
+}
+###
+
+POST http://localhost:3003/products
+Content-Type: application/json
+
+{
+  "id": "prod007",
+  "name": "Mouse pad",
+  "price": 200,
+  "description": "Mouse pad colorido",
+  "imageUrl": "https://picsum.photos/seed/Mouse%20pad/400"
+}
+###
+
+GET http://localhost:3003/purchases
+###
+
+POST http://localhost:3003/purchases
+Content-Type: application/json
+
+{
+  "id": "p005",
+  "buyer": "u001",
+  "products": [
+    {
+      "id": "prod007",
+      "quantity": 8
+    }
+  ],
+  "total_price": 1600,
+  "created_at": "2023-10-23T07:17:26Z"
+}
+
+
+PUT http://localhost:3003/products/prod003
+Content-Type: application/json
+
+{
+    "id": "prod003",
+    "name": "Gabrinete gamer",
+    "price": 300,
+    "description": "Gabinete gamer moderno",
+    "imageUrl": "https://picsum.photos/seed/Gabinete%20gamer/400"
+}
+###
+
+DELETE http://localhost:3003/purchases/p004
+Content-Type: application/json
+###
+
+
+

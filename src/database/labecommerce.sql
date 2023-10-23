@@ -7,7 +7,7 @@ CREATE TABLE
         name TEXT NOT NULL,
         email TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
-        created_at TEXT NOT NULL
+        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
 
 -- Visualizando estrutura de uma tabela
@@ -295,7 +295,7 @@ CREATE TABLE purchases (
     id TEXT PRIMARY KEY UNIQUE NOT NULL,
     buyer TEXT NOT NULL,
     total_price REAL NOT NULL,
-    created_at TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (buyer) REFERENCES users(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE

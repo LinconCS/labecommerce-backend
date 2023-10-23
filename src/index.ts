@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
+import { db } from './database/knex';
 import {
   users,
   products,
@@ -34,39 +35,40 @@ app.listen(PORT, () => {
 
 // Endpoints dos usuários
 // Get all users
-app.get('/users', (req: Request, res: Response) => {
+app.get('/users', async (req: Request, res: Response) => {
   try {
-    const allUsers = getAllUsers();
-    res.status(200).json(allUsers);
+    const users = await db('users').select('*');
+    res.status(200).json(users);
   } catch (error) {
-    console.log(error);
-    res.status(500).send("Erro ao obter usuários");
+    console.error(error);
+    res.status(500).send('Erro ao buscar usuários');
   }
 });
 
 // Create User
-app.post('/users', (req: Request, res: Response) => {
+app.post('/users', async (req: Request, res: Response) => {
   try {
     const { id, name, email, password } = req.body;
+
+    console.log('Dados recebidos:', { id, name, email, password });
 
     if (!id || !name || !email || !password) {
       throw new Error("Todos os campos são obrigatórios");
     }
 
-    // Validar se já existe um usuário com o mesmo ID
-    const existingUserById = getUserById(id);
+    const existingUserById = await db('users').where('id', id).first();
     if (existingUserById) {
       throw new Error("Já existe um usuário com esse ID");
     }
 
-    // Validar se já existe um usuário com o mesmo e-mail
-    const existingUserByEmail = getUserByEmail(email);
+    const existingUserByEmail = await db('users').where('email', email).first();
     if (existingUserByEmail) {
       throw new Error("Já existe um usuário com esse e-mail");
     }
 
-    const result = createUser(id, name, email, password);
-    res.status(201).send("Cadastro realizado com sucesso");
+    await db('users').insert({ id, name, email, password });
+
+    res.status(201).json({ message: "Cadastro realizado com sucesso" });
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.log(error);
@@ -76,6 +78,7 @@ app.post('/users', (req: Request, res: Response) => {
     }
   }
 });
+
 
 // Delete Users by ID
 app.delete('/users/:id', (req: Request, res: Response) => {
@@ -126,42 +129,26 @@ app.put('/users/:id', (req: Request, res: Response) => {
 
 
 // Endpoints dos produtos
-// Get all products
-app.get('/products', (req: Request, res: Response) => {
+// Get all products e Search products by name
+app.get('/products', async (req: Request, res: Response) => {
   try {
-    const searchTerm = req.query.name as string;
+    const { name } = req.query;
 
-    if (searchTerm && searchTerm.length < 1) {
-      throw new Error("O termo de busca deve ter pelo menos um caractere");
-    }
-
-    const allProducts = getAllProducts();
-    res.status(200).json(allProducts);
-  } catch (error: unknown) { // Usando unknown
-    if (error instanceof Error) { // Verificando se é uma instância de Error
-      console.log(error);
-      res.status(400).send(error.message);
+    if (name) {
+      const products = await db('products').where('name', 'like', `%${name}%`).select('*');
+      res.status(200).json(products);
     } else {
-      res.status(500).send("Ocorreu um erro inesperado");
+      const products = await db('products').select('*');
+      res.status(200).json(products);
     }
-  }
-});
-
-// Search products by name
-app.get('/product', (req: Request, res: Response) => {
-  const name = req.query.name as string;
-
-  if (name) {
-    const searchResults = searchProductsByName(name);
-    res.status(200).json(searchResults);
-  } else {
-    const allProducts = getAllProducts();
-    res.status(200).json(allProducts);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Erro ao buscar produtos');
   }
 });
 
 // Create Product
-app.post('/products', (req: Request, res: Response) => {
+app.post('/products', async (req: Request, res: Response) => {
   try {
     const { id, name, price, description, imageUrl } = req.body;
 
@@ -170,13 +157,14 @@ app.post('/products', (req: Request, res: Response) => {
     }
 
     // Validar se já existe um produto com o mesmo ID
-    const existingProduct = getProductById(id);
+    const existingProduct = await db('products').where('id', id).first();
     if (existingProduct) {
       throw new Error("Já existe um produto com esse ID");
     }
 
-    const result = createProduct(id, name, price, description, imageUrl);
-    res.status(201).send("Produto cadastrado com sucesso");
+    await db('products').insert({ id, name, price, description, image_url: imageUrl });
+
+    res.status(201).json({ message: "Produto cadastrado com sucesso" });
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.log(error);
@@ -222,20 +210,23 @@ app.get('/products/:id', (req: Request, res: Response) => {
 });
 
 // Edit products by ID
-app.put('/products/:id', (req: Request, res: Response) => {
+app.put('/products/:id', async (req: Request, res: Response) => {
   try {
     const idToEdit = req.params.id;
+    const { id, name, price, description, imageUrl } = req.body;
 
-    // Verificar se o produto existe
-    const product = products.find((product) => product.id === idToEdit);
+    // Verificar se o produto existe no banco de dados
+    const product = await db('products').where('id', idToEdit).first();
 
     if (product) {
       // Atualizar os dados do produto
-      product.id = req.body.id || product.id;
-      product.name = req.body.name || product.name;
-      product.price = req.body.price || product.price;
-      product.description = req.body.description || product.description;
-      product.imageUrl = req.body.imageUrl || product.imageUrl;
+      await db('products').where('id', idToEdit).update({
+        id: id || product.id,
+        name: name || product.name,
+        price: price || product.price,
+        description: description || product.description,
+        image_url: imageUrl || product.image_url
+      });
 
       res.status(200).send("Produto atualizado com sucesso");
     } else {
@@ -246,3 +237,90 @@ app.put('/products/:id', (req: Request, res: Response) => {
     res.status(500).send("Erro ao atualizar produto");
   }
 });
+
+
+
+// Get All Purchases
+app.get('/purchases', async (req: Request, res: Response) => {
+  try {
+    const purchases = await db('purchases').select('*');
+    res.status(200).json(purchases);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.log(error);
+      res.status(500).send(error.message);
+    } else {
+      res.status(500).send("Ocorreu um erro inesperado");
+    }
+  }
+});
+
+// Create Purchases
+app.post('/purchases', async (req: Request, res: Response) => {
+  try {
+    const { id, buyer, products } = req.body;
+
+    if (!id || !buyer || !products || !Array.isArray(products) || products.length === 0) {
+      throw new Error("Dados inválidos");
+    }
+
+    const buyerExists = await db('users').where('id', buyer).first();
+
+    if (!buyerExists) {
+      throw new Error("Usuário comprador não encontrado");
+    }
+
+    let total_price = 0; // Inicializa o total_price como zero
+
+    const productsInfo = await Promise.all(products.map(async (item) => {
+      const product = await db('products').where('id', item.id).first();
+
+      if (!product) {
+        throw new Error(`Produto com ID ${item.id} não encontrado`);
+      }
+
+      total_price += product.price * item.quantity; // Adiciona o preço do produto ao total_price
+
+      return { product_id: item.id, quantity: item.quantity };
+    }));
+
+    await db.transaction(async (trx) => {
+      const purchase = await trx('purchases').insert({ id, buyer, total_price });
+      const purchaseProducts = productsInfo.map(info => ({ purchase_id: purchase[0], ...info }));
+      await trx('purchases_products').insert(purchaseProducts);
+    });
+
+    res.status(201).json({ message: "Pedido realizado com sucesso" });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.log(error);
+      res.status(400).send(error.message);
+    } else {
+      res.status(500).send("Ocorreu um erro inesperado");
+    }
+  }
+});
+
+
+// DELETE Purchase by ID
+app.delete('/purchases/:id', async (req: Request, res: Response) => {
+  try {
+    const idToDelete = req.params.id;
+    const purchase = await db('purchases').where('id', idToDelete).first();
+
+    if (purchase) {
+      await db('purchases').where('id', idToDelete).del();
+      res.status(200).json({ message: "Pedido cancelado com sucesso" });
+    } else {
+      res.status(404).send("Pedido não encontrado");
+    }
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.log(error);
+      res.status(400).send(error.message);
+    } else {
+      res.status(500).send("Ocorreu um erro inesperado");
+    }
+  }
+});
+
