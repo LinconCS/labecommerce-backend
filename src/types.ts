@@ -5,6 +5,13 @@ export type TypeUsers = {
     password: string;
     createdAt: string; //(String no formato ano-mês-dia T hora:minuto:segundo:milésimo-de-segundos Z
   };
+
+  export type TypeUsersPost = {
+    id: string,
+    name: string,
+    email: string,
+    password: string
+}
   
   export type TypeProducts = {
     id: string;

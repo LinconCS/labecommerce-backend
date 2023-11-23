@@ -1,4 +1,4 @@
--- Active: 1697865929097@@127.0.0.1@3306
+-- Active: 1700718434247@@127.0.0.1@3306
 
 -- Criação da tabela users
 CREATE TABLE
@@ -7,7 +7,7 @@ CREATE TABLE
         name TEXT NOT NULL,
         email TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
-        created_at TEXT NOT NULL
+        created_at TEXT DEFAULT (DATETIME()) NOT NULL
     );
 
 -- Visualizando estrutura de uma tabela
@@ -295,7 +295,7 @@ CREATE TABLE purchases (
     id TEXT PRIMARY KEY UNIQUE NOT NULL,
     buyer TEXT NOT NULL,
     total_price REAL NOT NULL,
-    created_at TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (buyer) REFERENCES users(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
