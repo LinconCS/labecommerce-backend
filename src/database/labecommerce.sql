@@ -1,4 +1,4 @@
--- Active: 1700718434247@@127.0.0.1@3306
+-- Active: 1700802355691@@127.0.0.1@3306
 
 -- Criação da tabela users
 CREATE TABLE
@@ -186,17 +186,17 @@ VALUES (
     ), (
         'p002',
         'u002',
-        520,
+        200,
         '2023-08-30T14:30:00Z'
     ), (
         'p003',
         'u003',
-        300,
+        16200,
         '2023-08-30T15:00:00Z'
     ), (
         'p004',
         'u004',
-        270,
+        29010,
         '2023-08-30T15:30:00Z'
     );
 
@@ -251,7 +251,7 @@ VALUES
 -- Compra 2
 INSERT INTO purchases_products (purchase_id, product_id, quantity)
 VALUES
-    ('p002', 'prod006', 1);
+    ('p002', 'prod007', 1);
 
 -- Compra 3
 INSERT INTO purchases_products (purchase_id, product_id, quantity)
@@ -266,8 +266,7 @@ VALUES
     ('p004', 'prod002', 5),
     ('p004', 'prod003', 20),
     ('p004', 'prod004', 12),
-    ('p004', 'prod005', 8),
-    ('p004', 'prod006', 3);
+    ('p004', 'prod005', 8);
 
 -- Retornar as compras realizadas por cada usuário com os produtos e quantidades
     SELECT
